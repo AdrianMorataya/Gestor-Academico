@@ -1,219 +1,163 @@
-# Gestor Académico - 2023147
+# Gestor Académico API
 
-## Laboratorio # 2
+A RESTful API for academic management, designed to handle students, teachers, courses, enrollment and user profiles in an educational environment.
 
-### Descripción
-
-El proyecto consiste en una aplicación de ambiente web (solo Backend) para la administración del control de alumnos en un centro educativo. La aplicación se desarrollará utilizando las tecnologías siguientes:
-
-- **Node.js**
-- **MongoDB**
-- **Express**
-
-Además, se utilizarán las siguientes librerías adicionales:
-
-- **Bcrypt**
-- **Mongoose**
-- **JWT**
-
-El sistema contará con dos roles: **TEACHER_ROLE** y **STUDENT_ROLE**, donde el registro y las funciones serán diferentes para cada uno.
+<p align="center">
+  <img src="https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white" alt="Node.js" />
+  <img src="https://img.shields.io/badge/Express-404040?style=flat-square&logo=express&logoColor=white" alt="Express.js" />
+  <img src="https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white" alt="MongoDB" />
+  <img src="https://img.shields.io/badge/Mongoose-880000?style=flat-square&logo=mongoose&logoColor=white" alt="Mongoose" />
+  <img src="https://img.shields.io/badge/JWT-333333?style=flat-square&logo=jsonwebtokens&logoColor=white" alt="JWT" />
+  <img src="https://img.shields.io/badge/License-MIT-6B7280?style=flat-square" alt="MIT License" />
+</p>
 
 ---
 
-## Funciones del Alumno
+## Overview
 
-El **Alumno** podrá realizar las siguientes acciones:
+**Gestor Académico API** is a backend project developed to support academic administration through a modular REST API.
 
-1. **Registrarse** como `STUDENT_ROLE` por defecto y loguearse.
-2. **Asignarse a un máximo de 3 cursos**.
-3. **No podrá asignarse** a un curso que ya tenga alumnos asignados.
-4. **Visualizar los cursos** a los que está asignado.
-5. **Editar y eliminar su perfil**.
+It provides separate functionality for students and teachers, with role-based access, course management and student enrollment. The application uses MongoDB for data persistence and JWT for token-based authentication.
+
+## Features
+
+- **User authentication:** Registration and login for students and teachers.
+- **Role-based access:** Separate student and teacher roles.
+- **Student management:** Retrieve, update and delete student profiles.
+- **Teacher management:** Manage teacher profiles and their information.
+- **Course management:** Create, list, update and delete courses.
+- **Course enrollment:** Students can enroll in up to three courses.
+- **Enrollment consistency:** Course updates and deletions trigger corresponding enrollment changes.
+- **Profile pictures:** Support for uploading profile images.
+- **Password management:** Password updates and secure password hashing.
+- **Request validation:** Input validation and middleware for API requests.
+
+## Tech Stack
+
+| Technology | Purpose |
+|---|---|
+| Node.js | JavaScript runtime |
+| Express.js | REST API framework |
+| MongoDB | NoSQL database |
+| Mongoose | Database modeling and queries |
+| JSON Web Token | Authentication tokens |
+| Argon2 | Password hashing |
+| Express Validator | Request validation |
+| Helmet | HTTP security headers |
+| Express Rate Limit | Request rate limiting |
+| Multer | File uploads |
+| Morgan | HTTP request logging |
+| dotenv | Environment configuration |
+
+## User Roles
+
+### Student
+
+- Register and authenticate.
+- View and manage their profile.
+- Update their password.
+- Enroll in up to three courses.
+- Retrieve their assigned courses.
+
+### Teacher
+
+- Register and authenticate.
+- Manage their profile.
+- Create and manage their own courses.
+- Retrieve courses associated with their account.
+- Update or delete courses while maintaining enrollment consistency.
+
+## API Endpoints
+
+The API exposes endpoints for authentication, students, teachers and courses.
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/auth/registerStudent` | Register a student |
+| `POST` | `/api/auth/registerTeacher` | Register a teacher |
+| `POST` | `/api/auth/login` | Authenticate a user |
+| `GET` | `/api/student/` | List students |
+| `GET` | `/api/student/:id` | Retrieve a student |
+| `PUT` | `/api/student/updateStudent/:id` | Update a student |
+| `DELETE` | `/api/student/deleteStudent/:id` | Delete a student |
+| `PATCH` | `/api/student/updatePassword/:id` | Update a student's password |
+| `POST` | `/api/student/enrollInCourse` | Enroll a student in a course |
+| `GET` | `/api/student/getCourses/:id` | Retrieve a student's courses |
+| `GET` | `/api/teacher/` | List teachers |
+| `GET` | `/api/teacher/findTeacher/:id` | Retrieve a teacher |
+| `DELETE` | `/api/teacher/deleteTeacher/:id` | Delete a teacher |
+| `PATCH` | `/api/teacher/updatePassword/:id` | Update a teacher's password |
+| `POST` | `/api/teacher/addCourse` | Create a course |
+| `PUT` | `/api/teacher/updateCourse/:id` | Update a course |
+| `DELETE` | `/api/teacher/deleteCourse/:id` | Delete a course |
+| `GET` | `/api/teacher/getCourses/:id` | Retrieve a teacher's courses |
+| `GET` | `/api/course/` | List all courses |
+
+## Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/)
+- [MongoDB](https://www.mongodb.com/)
+- npm
+
+### Installation
+
+Clone the repository and install the dependencies:
+
+```bash
+git clone https://github.com/AdrianMorataya/Gestor-Academico.git
+cd Gestor-Academico
+npm install
+```
+
+### Environment Configuration
+
+Create a `.env` file in the root directory and configure the environment variables required by the application.
+
+```env
+PORT=3000
+URI_MONGO=mongodb://127.0.0.1:27017/gestor_academico
+```
+
+These values are examples. Verify the variable names and database configuration used in the source code before running the application.
+
+**Security note:** Never commit database credentials, authentication secrets or other sensitive environment variables.
+
+### Run the Application
+
+Start the server:
+
+```bash
+npm start
+```
+
+For development with Node.js watch mode:
+
+```bash
+npm run dev
+```
+
+## Testing the API
+
+You can test the endpoints using [Postman](https://www.postman.com/) or another HTTP client.
+
+For requests involving profile pictures, use `multipart/form-data`. For JSON-based requests, send the appropriate `Content-Type: application/json` header.
+
+Protected endpoints may require an authentication token, depending on the route configuration.
+
+## Security
+
+The project incorporates several security-related dependencies, including password hashing, JWT, request validation, rate limiting and HTTP security headers.
+
+For production use, ensure that sensitive routes enforce authentication and role-based authorization, validate uploaded files, and keep secrets outside version control.
+
+## License
+
+This project is distributed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
 
-## Funciones del Maestro
-
-El **Maestro** podrá realizar las siguientes acciones:
-
-1. **Registrarse** como `TEACHER_ROLE` y loguearse.
-2. **Crear, editar, eliminar y visualizar los cursos** que posea.
-3. Si un **maestro edita un curso** con alumnos asignados, estos deberán ser actualizados automáticamente con los cambios del curso.
-4. Si un **maestro elimina un curso** con alumnos asignados, los alumnos serán desasignados automáticamente del curso.
-
----
-
-## Aspectos a Tener en Cuenta
-
-1. **Funcionalidad**: El sistema debe cumplir con todas las funcionalidades descritas.
-2. **Autodidacta**: El desarrollo debe ser realizado de manera autónoma, investigando y utilizando las herramientas necesarias.
-3. **Cumplimiento de Instrucciones**: Es esencial seguir las instrucciones y requerimientos establecidos en este documento.
-4. **Validaciones Implícitas**: Se deben aplicar las validaciones necesarias, como la verificación de roles y la validación de asignaciones de cursos, entre otras.
-
----
-
-## Tecnologías Utilizadas
-
-- **Node.js**: Entorno de ejecución para el desarrollo del servidor.
-- **MongoDB**: Base de datos NoSQL para almacenar la información.
-- **Express**: Framework de Node.js para facilitar el desarrollo del backend.
-- **Bcrypt**: Librería para el hash de contraseñas.
-- **Mongoose**: Librería para interactuar con MongoDB en Node.js.
-- **JWT (JSON Web Token)**: Para la gestión de autenticación y autorización.
-
----
-
-## SOLICITUDES POSTMAN
-
-**REGISTER STUDENT**
-**URL:** `/api/auth/registerStudent`
-**Metodo:** `POST`
-**Cuerpo:**
-````json
-    {
-        "name": "string",
-        "surname": "string",
-        "username": "string",
-        "password": "string",
-        "email": "email",
-        "phone": "string",
-        "role": "ROLE",
-        "profilePicture": "file"
-    }
-````
-
-**REGISTER TEACHER**
-**URL:** `/api/auth/registerTeacher`
-**Metodo:** `POST`
-**Cuerpo:**
-````json
-    {
-        "name": "string",
-        "surname": "string",
-        "username": "string",
-        "password": "string",
-        "email": "email",
-        "phone": "string",
-        "role": "ROLE",
-        "profilePicture": "file"
-    }
-````
-
-**LOGIN STUDENT**
-**URL:** `/api/auth/login`
-**Metodo:** `POST`
-**Cuerpo:**
-````json
-    {
-        "email": "email",
-        "password": "string"
-    }
-````
-
-**LIST STUDENTS**
-**URL:** `/api/student/`
-**Metodo:** `GET`
-
-**LIST STUDENT BY ID**
-**URL:** `/api/student/:id`
-**Metodo:** `GET`
-
-**DELETE STUDENT**
-**URL:** `/api/student/deleteStudent/:id`
-**Metodo:** `DELETE`
-
-**UPDATE PASSWORD**
-**URL:** `/api/student/updatePassword/:id`
-**Metodo:** `PATCH`
-**Cuerpo:**
-````json
-    {
-        "newPassword": "string"
-    }
-````
-
-**ASSIGN COURSE**
-**URL:** `/api/student/enrollInCourse`
-**Metodo:** `POST`
-**Cuerpo:**
-````json
-    {
-        "studentId": "id",
-        "courseId": "id"
-    }
-````
-
-**LIST STUDENT COURSES**
-**URL:** `/api/student/getCourses/:id`
-**Metodo:** `GET`
-
-**UPDATE STUDENT**
-**URL:** `/api/student/updateStudent/:id`
-**Metodo:** `PUT`
-**Cuerpo:**
-````json
-    {
-        "name": "string",
-        "surname": "string",
-        "username": "string",
-        "password": "string",
-        "email": "email",
-        "phone": "string",
-        "role": "ROLE",
-        "profilePicture": "file"
-    }
-````
-**LIST TEACHERS**
-**URL:** `/api/teacher/`
-**Metodo:** `GET`
-
-**LIST TEACHER BY ID**
-**URL:** `/api/teacher/findTeacher/:id`
-**Metodo:** `GET`
-
-**DELETE TEACHER**
-**URL:** `/api/teacher/deleteTeacher/:id`
-**Metodo:** `DELETE`
-
-**UPDATE PASSWORD TEACHER**
-**URL:** `/api/teacher/updatePassword/:id`
-**Metodo:** `PATCH`
-**Cuerpo:**
-````json
-    {
-        "newPassword": "string"
-    }
-````
-
-**ADD COURSE**
-**URL:** `/api/teacher/addCourse`
-**Metodo:** `POST`
-**Cuerpo:**
-````json
-    {
-        "name": "string",
-        "teacherId": "id"
-    }
-````
-
-**UPDATE COURSE**
-**URL:** `/api/teacher/updateCourse/:id`
-**Metodo:** `PUT`
-**Cuerpo:**
-````json
-    {
-        "name": "string"
-    }
-````
-
-**DELETE COURSE**
-**URL:** `/api/teacher/deleteCourse/:id`
-**Metodo:** `DELETE`
-
-**LIST TEACHER COURSES**
-**URL:** `/api/teacher/getCourses/:id`
-**Metodo:** `GET`
-
-**LIST ALL COURSES**
-**URL:** `/api/course/`
-**Metodo:** `GET`
+<p align="center">
+  <sub>Developed by <a href="https://github.com/AdrianMorataya">Adrian Morataya</a></sub>
+</p>
